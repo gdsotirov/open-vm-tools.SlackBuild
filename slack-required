@@ -1,12 +1,12 @@
-cxxlibs >= 6.0.17 | gcc-g++ >= 4.7.1
+cxxlibs >= 6.0.18 | gcc-g++ >= 4.8.2
 fuse >= 2.8.5
-gcc >= 4.7.1
-glib2 >= 2.32.4
-glibc-solibs >= 2.15
-icu4c >= 49.1.2
+gcc >= 4.8.2
+glib2 >= 2.36.4
+glibc-solibs >= 2.17
+icu4c >= 51.2
 infozip >= 6.0
-libdrm >= 2.4.33
-libffi >= 3.0.11
-libmspack >= 0.4alpha
-openssl >= 1.0.1c | openssl-solibs >= 1.0.1c
+libdrm >= 2.4.46
+libffi >= 3.0.13
+libmspack >= 0.5alpha
+openssl >= 1.0.1e | openssl-solibs >= 1.0.1e
 udev >= 182
