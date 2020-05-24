@@ -50,12 +50,12 @@ start() {
   checkvm
   if [ -x $CMD ]; then
     if [ ! -e $PIDFILE ]; then
-      echo -n "Starting $SNAME in $CMD... "
+      echo -n "Starting ${SNAME} in ${CMD}... "
       $CMD $CMD_OPTS
       print_status
     else
       DPID=$(cat $PIDFILE)
-      echo "Starting $SNAME: Already running with PID $DPID!"
+      echo "Starting ${SNAME}: Already running with PID ${DPID}!"
     fi
   fi
 }
@@ -63,8 +63,8 @@ start() {
 stop() {
   if [ -e $PIDFILE ]; then
     DPID=$(cat $PIDFILE)
-    echo -n "Stopping ${SNAME} with PID $DPID... "
-    kill -15 $DPID
+    echo -n "Stopping ${SNAME} with PID ${DPID}... "
+    kill -15 ${DPID}
     print_status
     # Daemon does not seem to remove PID file, so cleanup
     rm -f $PIDFILE
@@ -82,19 +82,19 @@ restart() {
 status() {
   if [ -e $PIDFILE ]; then
     DPID=$(cat $PIDFILE)
-    echo "$SNAME running with PID $DPID."
+    echo "${SNAME} running with PID ${DPID}."
   else
     STAT=`ps -C $NAME -o pid= | wc -l` 
     if [ ${STAT} -ge 1 ]; then
-      echo "$SNAME is running"
+      echo "${SNAME} is running"
     else
-      echo "$SNAME is not running" 
+      echo "${SNAME} is not running" 
     fi
   fi
 }
 
 help() {
-  echo "$SNAME control"
+  echo "${SNAME} control"
   echo "Usage: $0 start|stop|restart|status"
   echo
 }
