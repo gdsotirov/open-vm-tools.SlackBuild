@@ -23,8 +23,8 @@
 . ../../slack-package.conf
 
 NAME=open-vm-tools
-VERSION=10.2.5
-VER_BLD=8068406
+VERSION=10.3.10
+VER_BLD=12406962
 BUILD=${BUILD:-1}
 
 TMP=${TMP:-/tmp}
@@ -64,6 +64,7 @@ CXXFLAGS=$SLKCFLAGS \
             --sysconfdir=/etc \
             --localstatedir=/var \
             --docdir=/usr/doc/$NAME-${VERSION}_$VER_BLD \
+            --disable-dependency-tracking \
             --disable-silent-rules \
             --enable-shared=yes \
             --enable-static=no \
@@ -77,7 +78,7 @@ make DESTDIR=$PKG install || exit 6
 
 # Manually install init script
 install -m 755 -d $PKG/etc/rc.d
-install -m 644 $CWD/rc.vmtoolsd $PKG/etc/rc.d/rc.vmtoolsd.new
+install -m 644 -p $CWD/rc.vmtoolsd $PKG/etc/rc.d/rc.vmtoolsd.new
 
 # Prepare the package
 bin_perms $PKG
@@ -86,21 +87,21 @@ sbin_perms $PKG
 create_docs $PKG $NAME-${VERSION}_$VER_BLD
 
 install -m 755 -d $PKG/install
-install -m 644 $CWD/doinst.sh      $PKG/install/doinst.sh
-install -m 644 $CWD/slack-desc     $PKG/install/slack-desc
-install -m 644 $CWD/slack-required $PKG/install/slack-required
-install -m 644 $CWD/slack-suggests $PKG/install/slack-suggests
+install -m 644 -p $CWD/doinst.sh      $PKG/install/doinst.sh
+install -m 644 -p $CWD/slack-desc     $PKG/install/slack-desc
+install -m 644 -p $CWD/slack-required $PKG/install/slack-required
+install -m 644 -p $CWD/slack-suggests $PKG/install/slack-suggests
 
 SBDIR=$PKG/usr/src/slackbuilds/$NAME-${VERSION}_$VER_BLD
 install -m 755 -d $SBDIR
-install -m 644 $CWD/COPYING          $SBDIR/COPYING
-install -m 644 $CWD/README           $SBDIR/README
-install -m 644 $CWD/doinst.sh        $SBDIR/doinst.sh
-install -m 644 $CWD/rc.vmtoolsd      $SBDIR/rc.vmtoolsd
-install -m 644 $CWD/slack-desc       $SBDIR/slack-desc
-install -m 644 $CWD/slack-required   $SBDIR/slack-required
-install -m 644 $CWD/slack-suggests   $SBDIR/slack-suggests
-install -m 644 $CWD/$NAME.SlackBuild $SBDIR/$NAME.SlackBuild
+install -m 644 -p $CWD/COPYING          $SBDIR/COPYING
+install -m 644 -p $CWD/README           $SBDIR/README
+install -m 644 -p $CWD/doinst.sh        $SBDIR/doinst.sh
+install -m 644 -p $CWD/rc.vmtoolsd      $SBDIR/rc.vmtoolsd
+install -m 644 -p $CWD/slack-desc       $SBDIR/slack-desc
+install -m 644 -p $CWD/slack-required   $SBDIR/slack-required
+install -m 644 -p $CWD/slack-suggests   $SBDIR/slack-suggests
+install -m 644 -p $CWD/$NAME.SlackBuild $SBDIR/$NAME.SlackBuild
 
 # Assemble the package in the package dir
 cd $PKG
