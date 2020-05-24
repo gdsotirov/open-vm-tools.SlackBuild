@@ -17,9 +17,10 @@ C_NORMAL=$'\e[0m'
 
 SNAME='vmtools daemon'
 NAME=vmtoolsd
-CMD="/usr/bin/$NAME"
-PIDFILE="/var/run/$NAME.pid"
-CMD_OPTS="--background=$PIDFILE"
+CMD="/usr/bin/${NAME}"
+PIDFILE="/var/run/${NAME}.pid"
+CFGFILE="/etc/vmware-tools/tools.conf"
+CMD_OPTS="--background=${PIDFILE} --config=${CFGFILE}"
 
 ok() {
   echo "${C_GREEN}Done${C_NORMAL}"
