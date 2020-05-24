@@ -22,5 +22,6 @@ preserve_perms() {
   mv ${NEW} ${OLD}
 }
 
+config etc/vmware-tools/tools.conf.new
 preserve_perms etc/rc.d/rc.vmtoolsd.new
 
