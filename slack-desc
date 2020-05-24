@@ -1,0 +1,11 @@
+open-vm-tools: open-vm-tools (VMware's services and modules for Linux VMs)
+open-vm-tools:
+open-vm-tools: open-vm-tools is a set of services and modules that enable
+open-vm-tools: several features in VMware products for better management of,
+open-vm-tools: and seamless user interactions with, guests. It includes kernel
+open-vm-tools: modules for enhancing the performance of virtual machines
+open-vm-tools: running Linux or other VMware supported Unix like guest
+open-vm-tools: operating systems.
+open-vm-tools:
+open-vm-tools:
+open-vm-tools: Packaged by Georgi D. Sotirov <gdsotirov@gmail.com>
