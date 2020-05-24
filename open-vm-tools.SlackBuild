@@ -1,0 +1,117 @@
+#!/bin/sh
+#
+# Slackware build script for Open Virtual Machine Tools (open-vm-tools)
+# Copyright (C) 2020 Georgi D. Sotirov <gdsotirov@dir.bg>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+# Visit SlackPack at http://sotirov-bg.net/slackpack/
+#
+
+. ../../slack-package.conf
+
+NAME=open-vm-tools
+VERSION=10.2.5
+VER_BLD=8068406
+BUILD=${BUILD:-1}
+
+TMP=${TMP:-/tmp}
+CWD=${CWD:-`pwd`}
+PKG_DIR=${PKG_DIR:-/tmp}
+
+if [ ! -e $TMP ]; then
+  mkdir -p $TMP # location to build the source
+fi
+
+SRC=$TMP/$NAME-$VERSION-$VER_BLD
+if [ -e $SRC -a -d $SRC ]; then
+  echo "Source directory '$SRC' already exists! Plaese, move it or remove it."
+  exit 1
+fi
+
+PKG=$TMP/package-$NAME-$VER_BLD
+if [ -e $PKG -a -d $PKG ]; then
+  echo "Package creation directory '$PKG' already exists! Please, move it or remove it."
+  exit 2
+fi
+mkdir -p $PKG
+
+# Extract the source
+cd $TMP
+tar -xvf $CWD/$NAME-$VERSION-$VER_BLD.tar.gz || exit 3
+cd $SRC
+fix_source
+
+# Configure
+CFLAGS=$SLKCFLAGS \
+CXXFLAGS=$SLKCFLAGS \
+./configure --build=$ARCH-slackware-linux \
+            --host=$ARCH-slackware-linux \
+            --prefix=/usr \
+            --libdir=/usr/lib$LIBDIRSUFFIX \
+            --sysconfdir=/etc \
+            --localstatedir=/var \
+            --docdir=/usr/doc/$NAME-${VERSION}_$VER_BLD \
+            --disable-silent-rules \
+            --enable-shared=yes \
+            --enable-static=no \
+            --without-gtkmm3 \
+            --without-xerces \
+            --without-dnet || exit 4
+
+# Build & install
+make -j4 || exit 5
+make DESTDIR=$PKG install || exit 6
+
+# Manually install init script
+install -m 755 -d $PKG/etc/rc.d
+install -m 644 $CWD/rc.vmtoolsd $PKG/etc/rc.d/rc.vmtoolsd.new
+
+# Prepare the package
+bin_perms $PKG
+sbin_perms $PKG
+( cd $PKG; strip_bin; strip_lib )
+create_docs $PKG $NAME-${VERSION}_$VER_BLD
+
+install -m 755 -d $PKG/install
+install -m 644 $CWD/doinst.sh      $PKG/install/doinst.sh
+install -m 644 $CWD/slack-desc     $PKG/install/slack-desc
+install -m 644 $CWD/slack-required $PKG/install/slack-required
+install -m 644 $CWD/slack-suggests $PKG/install/slack-suggests
+
+SBDIR=$PKG/usr/src/slackbuilds/$NAME-${VERSION}_$VER_BLD
+install -m 755 -d $SBDIR
+install -m 644 $CWD/doinst.sh        $SBDIR/doinst.sh
+install -m 644 $CWD/rc.vmtoolsd      $SBDIR/rc.vmtoolsd
+install -m 644 $CWD/slack-desc       $SBDIR/slack-desc
+install -m 644 $CWD/slack-required   $SBDIR/slack-required
+install -m 644 $CWD/slack-suggests   $SBDIR/slack-suggests
+install -m 644 $CWD/$NAME.SlackBuild $SBDIR/$NAME.SlackBuild
+
+# Assemble the package in the package dir
+cd $PKG
+PKG_NAME=$NAME-${VERSION}_$VER_BLD-$ARCH-$BUILD$MYIN
+makepkg -l y -c n ../$PKG_NAME.txz
+cd $TMP
+md5sum $PKG_NAME.txz > $PKG_NAME.txz.md5
+cat $PKG/install/slack-desc > $PKG_NAME.txt
+mv $PKG_NAME* $PKG_DIR
+
+# Clean Up
+if [ "$1" == "--cleanup" ]; then
+  rm -r $SRC
+  rm -r $PKG
+fi
+
