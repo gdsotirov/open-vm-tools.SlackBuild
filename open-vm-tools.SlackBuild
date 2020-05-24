@@ -81,6 +81,9 @@ make DESTDIR=$PKG install || exit 6
 # Manually install init script
 install -m 755 -d $PKG/etc/rc.d
 install -m 644 -p $CWD/rc.vmtoolsd $PKG/etc/rc.d/rc.vmtoolsd.new
+# Copy configuration file for swapping
+install -m 644 -p $PKG/etc/vmware-tools/tools.conf.example \
+	          $PKG/etc/vmware-tools/tools.conf.new
 
 # Prepare the package
 bin_perms $PKG
