@@ -1,0 +1,112 @@
+#!/bin/sh
+#
+# /etc/rc.d/rc.vmtoolsd
+#
+# Start/stop/restart/status of open-vm-tools deamon.
+#
+# To make open-vm-tools daemon start automatically at boot, make this
+# file executable:  chmod 755 /etc/rc.d/rc.vmtoolsd
+#
+# Written by Georgi D. Sotirov <gsotirov@gmail.com>
+
+# Bash colors
+C_GREEN=$'\e[32;01m'
+C_YELLOW=$'\e[33;01m'
+C_RED=$'\e[31;01m'
+C_NORMAL=$'\e[0m'
+
+SNAME='vmtools daemon'
+NAME=vmtoolsd
+CMD="/usr/bin/$NAME"
+PIDFILE="/var/run/$NAME.pid"
+CMD_OPTS="--background=$PIDFILE"
+
+ok() {
+  echo "${C_GREEN}Done${C_NORMAL}"
+}
+
+fail() {
+  echo "${C_RED}Failure${C_NORMAL}"
+}
+
+print_status() {
+  if [ $? != 0 ]; then
+    fail
+  else
+    ok
+  fi
+}
+
+checkvm() {
+  # Check whether running inside virtual machine
+  vmware-checkvm 2>&1 >/dev/null
+  if [ $? -ne 0 ]; then
+    echo "Error: Not running in a virtual machine."
+    exit 1
+  fi
+}
+
+start() {
+  checkvm
+  if [ -x $CMD ]; then
+    if [ ! -e $PIDFILE ]; then
+      echo -n "Starting $SNAME in $CMD... "
+      $CMD $CMD_OPTS
+      print_status
+    else
+      DPID=$(cat $PIDFILE)
+      echo "Starting $SNAME: Already running with PID $DPID!"
+    fi
+  fi
+}
+
+stop() {
+  if [ -e $PIDFILE ]; then
+    DPID=$(cat $PIDFILE)
+    echo -n "Stopping ${SNAME} with PID $DPID... "
+    kill -15 $DPID
+    print_status
+    # Daemon does not seem to remove PID file, so cleanup
+    rm -f $PIDFILE
+  else
+    echo "Stopping ${SNAME}: Not running!"
+  fi
+}
+
+restart() {
+  stop
+  sleep 1
+  start
+}
+
+status() {
+  if [ -e $PIDFILE ]; then
+    DPID=$(cat $PIDFILE)
+    echo "$SNAME running with PID $DPID."
+  else
+    STAT=`ps -C $NAME -o pid= | wc -l` 
+    if [ ${STAT} -ge 1 ]; then
+      echo "$SNAME is running"
+    else
+      echo "$SNAME is not running" 
+    fi
+  fi
+}
+
+help() {
+  echo "$SNAME control"
+  echo "Usage: $0 start|stop|restart|status"
+  echo
+}
+
+case "$1" in
+  'start')
+    start ;;
+  'stop')
+    stop ;;
+  'status')
+    status ;;
+  *)
+    help ;;
+esac
+
