@@ -93,6 +93,8 @@ install -m 644 $CWD/slack-suggests $PKG/install/slack-suggests
 
 SBDIR=$PKG/usr/src/slackbuilds/$NAME-${VERSION}_$VER_BLD
 install -m 755 -d $SBDIR
+install -m 644 $CWD/COPYING          $SBDIR/COPYING
+install -m 644 $CWD/README           $SBDIR/README
 install -m 644 $CWD/doinst.sh        $SBDIR/doinst.sh
 install -m 644 $CWD/rc.vmtoolsd      $SBDIR/rc.vmtoolsd
 install -m 644 $CWD/slack-desc       $SBDIR/slack-desc
