@@ -23,8 +23,8 @@
 . ../../slack-package.conf
 
 NAME=open-vm-tools
-VERSION=11.0.5
-VER_BLD=15389592
+VERSION=11.1.0
+VER_BLD=16036546
 ARCH=${ARCH:-i586}
 BUILD=${BUILD:-1}
 
@@ -56,7 +56,7 @@ cd $SRC
 fix_source
 
 # Configure
-CFLAGS="$SLKCFLAGS" \
+CFLAGS="$SLKCFLAGS -Wno-format-overflow" \
 CXXFLAGS="$SLKCFLAGS" \
 ./configure --build=${ARCH}-slackware-linux \
             --host=${ARCH}-slackware-linux \
