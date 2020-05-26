@@ -19,7 +19,7 @@ preserve_perms() {
     cat ${NEW} > ${NEW}.incoming
     mv ${NEW}.incoming ${NEW}
   fi
-  mv ${NEW} ${OLD}
+  config ${NEW}
 }
 
 config etc/vmware-tools/tools.conf.new
