@@ -55,8 +55,13 @@ tar -xvf $CWD/${NAME}-${VERSION}-${VER_BLD}.tar.gz || exit 3
 cd $SRC
 fix_source
 
+# Apply patch
+if [ -e $CWD/${NAME}-${VERSION}-${VER_BLD}.diff ]; then
+  patch -p1 -b -z.orig < $CWD/${NAME}-${VERSION}-${VER_BLD}.diff || exit 4
+fi
+
 # Configure
-CFLAGS="$SLKCFLAGS -Wno-format-overflow" \
+CFLAGS="$SLKCFLAGS" \
 CXXFLAGS="$SLKCFLAGS" \
 ./configure --build=${ARCH}-slackware-linux \
             --host=${ARCH}-slackware-linux \
@@ -73,11 +78,11 @@ CXXFLAGS="$SLKCFLAGS" \
             --enable-servicediscovery \
             --without-xerces \
             --with-icu \
-            || exit 4
+            || exit 5
 
 # Build & install
-make -j4 || exit 5
-make DESTDIR=$PKG install || exit 6
+make -j4 || exit 6
+make DESTDIR=$PKG install || exit 7
 
 # Manually install init script
 install -m 755 -d $PKG/etc/rc.d
@@ -107,6 +112,8 @@ install -m 644 -p $CWD/rc.vmtoolsd        $SBDIR/rc.vmtoolsd
 install -m 644 -p $CWD/slack-desc         $SBDIR/slack-desc
 install -m 644 -p $CWD/slack-required     $SBDIR/slack-required
 install -m 644 -p $CWD/slack-suggests     $SBDIR/slack-suggests
+install -m 644 -p $CWD/${NAME}-${VERSION}-${VER_BLD}.diff \
+	          $SBDIR/${NAME}-${VERSION}-${VER_BLD}.diff
 install -m 644 -p $CWD/${NAME}.SlackBuild $SBDIR/${NAME}.SlackBuild
 
 # Assemble the package in the package dir
