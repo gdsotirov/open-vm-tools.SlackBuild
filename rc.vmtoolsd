@@ -105,6 +105,8 @@ case "$1" in
     start ;;
   'stop')
     stop ;;
+  'restart')
+    restart ;;
   'status')
     status ;;
   *)
