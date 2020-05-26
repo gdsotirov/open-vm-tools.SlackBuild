@@ -1,0 +1,22 @@
+# As suggested in https://github.com/vmware/open-vm-tools/issues/428#issuecomment-633816749
+diff -urNad open-vm-tools-11.1.0-16036546-orig/lib/file/fileTemp.c open-vm-tools-11.1.0-16036546/lib/file/fileTemp.c
+--- open-vm-tools-11.1.0-16036546-orig/lib/file/fileTemp.c	2020-04-15 08:05:44.000000000 +0300
++++ open-vm-tools-11.1.0-16036546/lib/file/fileTemp.c	2020-05-26 09:22:17.447650025 +0300
+@@ -188,7 +188,7 @@
+       if (errno != EEXIST) {
+          Log(LGPFX" Failed to create temporary %s \"%s\", errno: %d.\n",
+              createTempFile ? "file" : "directory",
+-             path, errno);
++             (path != NULL) ? path : "NULL", errno);
+          goto exit;
+       }
+    }
+@@ -196,7 +196,7 @@
+    if (fd == -1) {
+       Warning(LGPFX" Failed to create temporary %s \"%s\": "
+               "The name space is full.\n",
+-              createTempFile ? "file" : "directory", path);
++              createTempFile ? "file" : "directory", (path != NULL) ? path : "NULL");
+ 
+       errno = EAGAIN;
+    }
