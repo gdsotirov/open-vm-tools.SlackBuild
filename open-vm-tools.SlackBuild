@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Slackware build script for Open Virtual Machine Tools (open-vm-tools)
-# Copyright (C) 2020 Georgi D. Sotirov <gdsotirov@gmail.com>
+# Copyright (C) 2020-2022 Georgi D. Sotirov <gdsotirov@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,8 +23,8 @@
 . ../../slack-package.conf
 
 NAME=open-vm-tools
-VERSION=11.1.0
-VER_BLD=16036546
+VERSION=11.0.5
+VER_BLD=15389592
 ARCH=${ARCH:-i586}
 BUILD=${BUILD:-1}
 
@@ -33,7 +33,7 @@ CWD=${CWD:-`pwd`}
 PKG_DIR=${PKG_DIR:-/tmp}
 
 if [ ! -e $TMP ]; then
-  mkdir -p $TMP # location to build the source
+  mkdir --parents $TMP # location to build the source
 fi
 
 SRC=$TMP/${NAME}-${VERSION}-${VER_BLD}
@@ -47,11 +47,11 @@ if [ -e $PKG -a -d $PKG ]; then
   echo "Package creation directory '$PKG' already exists! Please, move it or remove it."
   exit 2
 fi
-mkdir -p $PKG
+mkdir --parents $PKG
 
 # Extract the source
 cd $TMP
-tar -xvf $CWD/${NAME}-${VERSION}-${VER_BLD}.tar.gz || exit 3
+tar --extract --verbose --file=$CWD/${NAME}-${VERSION}-${VER_BLD}.tar.gz || exit 3
 cd $SRC
 fix_source
 
@@ -85,11 +85,13 @@ make -j4 || exit 6
 make DESTDIR=$PKG install || exit 7
 
 # Manually install init script
-install -m 755 -d $PKG/etc/rc.d
-install -m 644 -p $CWD/rc.vmtoolsd $PKG/etc/rc.d/rc.vmtoolsd.new
+install --mode 755 --directory $PKG/etc/rc.d
+install --mode 644 --preserve-timestamps
+        $CWD/rc.vmtoolsd $PKG/etc/rc.d/rc.vmtoolsd.new
 # Copy configuration file for swapping
-install -m 644 -p $PKG/etc/vmware-tools/tools.conf.example \
-	          $PKG/etc/vmware-tools/tools.conf.new
+install --mode 644 --preserve-timestamps \
+        $PKG/etc/vmware-tools/tools.conf.example \
+        $PKG/etc/vmware-tools/tools.conf.new
 
 # Prepare the package
 bin_perms $PKG
@@ -97,36 +99,49 @@ sbin_perms $PKG
 ( cd $PKG; strip_bin; strip_lib )
 create_docs $PKG ${NAME}-${VERSION}_${VER_BLD}
 
-install -m 755 -d $PKG/install
-install -m 644 -p $CWD/doinst.sh      $PKG/install/doinst.sh
-install -m 644 -p $CWD/slack-desc     $PKG/install/slack-desc
-install -m 644 -p $CWD/slack-required $PKG/install/slack-required
-install -m 644 -p $CWD/slack-suggests $PKG/install/slack-suggests
+install --mode 755 --directory $PKG/install
+install --mode 644 --preserve-timestamps \
+        $CWD/doinst.sh      $PKG/install/doinst.sh
+install --mode 644 --preserve-timestamps \
+        $CWD/slack-desc     $PKG/install/slack-desc
+install --mode 644 --preserve-timestamps \
+        $CWD/slack-required $PKG/install/slack-required
+install --mode 644 --preserve-timestamps \
+        $CWD/slack-suggests $PKG/install/slack-suggests
 
 SBDIR=$PKG/usr/src/slackbuilds/${NAME}-${VERSION}_$VER_BLD
-install -m 755 -d $SBDIR
-install -m 644 -p $CWD/COPYING            $SBDIR/COPYING
-install -m 644 -p $CWD/README             $SBDIR/README
-install -m 644 -p $CWD/doinst.sh          $SBDIR/doinst.sh
-install -m 644 -p $CWD/rc.vmtoolsd        $SBDIR/rc.vmtoolsd
-install -m 644 -p $CWD/slack-desc         $SBDIR/slack-desc
-install -m 644 -p $CWD/slack-required     $SBDIR/slack-required
-install -m 644 -p $CWD/slack-suggests     $SBDIR/slack-suggests
-install -m 644 -p $CWD/${NAME}-${VERSION}-${VER_BLD}.diff \
-	          $SBDIR/${NAME}-${VERSION}-${VER_BLD}.diff
-install -m 644 -p $CWD/${NAME}.SlackBuild $SBDIR/${NAME}.SlackBuild
+install --mode 755 --directory $SBDIR
+install --mode 644 --preserve-timestamps \
+        $CWD/COPYING            $SBDIR/COPYING
+install --mode 644 --preserve-timestamps \
+        $CWD/README             $SBDIR/README
+install --mode 644 --preserve-timestamps \
+        $CWD/doinst.sh          $SBDIR/doinst.sh
+install --mode 644 --preserve-timestamps \
+        $CWD/rc.vmtoolsd        $SBDIR/rc.vmtoolsd
+install --mode 644 --preserve-timestamps \
+        $CWD/slack-desc         $SBDIR/slack-desc
+install --mode 644 --preserve-timestamps \
+        $CWD/slack-required     $SBDIR/slack-required
+install --mode 644 --preserve-timestamps \
+        $CWD/slack-suggests     $SBDIR/slack-suggests
+install --mode 644 --preserve-timestamps \
+        $CWD/${NAME}-${VERSION}-${VER_BLD}.diff \
+        $SBDIR/${NAME}-${VERSION}-${VER_BLD}.diff
+install --mode 644 --preserve-timestamps \
+        $CWD/${NAME}.SlackBuild $SBDIR/${NAME}.SlackBuild
 
 # Assemble the package in the package dir
 cd $PKG
 PKGNAME=${NAME}-${VERSION}_${VER_BLD}-${ARCH}-${BUILD}${MYIN}
-makepkg -l y -c n $PKG_DIR/${PKGNAME}.txz
-cd $PKG_DIR
-md5sum ${PKGNAME}.txz > ${PKGNAME}.txz.md5
+makepkg --chown n --linkadd y $PKG_DIR/${PKGNAME}.txz
+md5sum $PKG_DIR/${PKGNAME}.txz > $PKG_DIR/${PKGNAME}.txz.md5
 cat $PKG/install/slack-desc > $PKG_DIR/${PKGNAME}.txt
 
 # Clean Up
 if [ "$1" == "--cleanup" ]; then
-  rm -r $SRC
-  rm -r $PKG
+  rm --recursive $SRC
+  rm --recursive $PKG
 fi
+
 
