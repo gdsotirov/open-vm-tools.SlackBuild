@@ -23,8 +23,8 @@
 . ../../slack-package.conf
 
 NAME=open-vm-tools
-VERSION=11.0.5
-VER_BLD=15389592
+VERSION=11.3.5
+VER_BLD=18557794
 ARCH=${ARCH:-i586}
 BUILD=${BUILD:-1}
 
@@ -61,6 +61,7 @@ if [ -e $CWD/${NAME}-${VERSION}-${VER_BLD}.diff ]; then
 fi
 
 # Configure
+# without ICU (see https://github.com/vmware/open-vm-tools/issues/522)
 CFLAGS="$SLKCFLAGS" \
 CXXFLAGS="$SLKCFLAGS" \
 ./configure --build=${ARCH}-slackware-linux \
@@ -77,7 +78,7 @@ CXXFLAGS="$SLKCFLAGS" \
             --enable-libappmonitor \
             --enable-servicediscovery \
             --without-xerces \
-            --with-icu \
+            --without-icu \
             || exit 5
 
 # Build & install
@@ -86,7 +87,7 @@ make DESTDIR=$PKG install || exit 7
 
 # Manually install init script
 install --mode 755 --directory $PKG/etc/rc.d
-install --mode 644 --preserve-timestamps
+install --mode 644 --preserve-timestamps \
         $CWD/rc.vmtoolsd $PKG/etc/rc.d/rc.vmtoolsd.new
 # Copy configuration file for swapping
 install --mode 644 --preserve-timestamps \
@@ -125,9 +126,11 @@ install --mode 644 --preserve-timestamps \
         $CWD/slack-required     $SBDIR/slack-required
 install --mode 644 --preserve-timestamps \
         $CWD/slack-suggests     $SBDIR/slack-suggests
+if [ -e $CWD/${NAME}-${VERSION}-${VER_BLD}.diff ]; then
 install --mode 644 --preserve-timestamps \
         $CWD/${NAME}-${VERSION}-${VER_BLD}.diff \
         $SBDIR/${NAME}-${VERSION}-${VER_BLD}.diff
+fi
 install --mode 644 --preserve-timestamps \
         $CWD/${NAME}.SlackBuild $SBDIR/${NAME}.SlackBuild
 
