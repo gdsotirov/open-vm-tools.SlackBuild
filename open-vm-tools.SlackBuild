@@ -23,8 +23,8 @@
 . ../../slack-package.conf
 
 NAME=open-vm-tools
-VERSION=11.3.5
-VER_BLD=18557794
+VERSION=12.0.0
+VER_BLD=19345655
 ARCH=${ARCH:-i586}
 BUILD=${BUILD:-1}
 
@@ -64,8 +64,8 @@ fi
 # without ICU (see https://github.com/vmware/open-vm-tools/issues/522)
 CFLAGS="$SLKCFLAGS" \
 CXXFLAGS="$SLKCFLAGS" \
-./configure --build=${ARCH}-slackware-linux \
-            --host=${ARCH}-slackware-linux \
+./configure --build="${ARCH}-slackware-linux" \
+            --host="${ARCH}-slackware-linux" \
             --prefix=/usr \
             --libdir=/usr/lib$LIBDIRSUFFIX \
             --sysconfdir=/etc \
@@ -82,7 +82,7 @@ CXXFLAGS="$SLKCFLAGS" \
             || exit 5
 
 # Build & install
-make -j4 || exit 6
+make --jobs || exit 6
 make DESTDIR=$PKG install || exit 7
 
 # Manually install init script
@@ -146,5 +146,4 @@ if [ "$1" == "--cleanup" ]; then
   rm --recursive $SRC
   rm --recursive $PKG
 fi
-
 
