@@ -1,6 +1,6 @@
-aaa_glibc-solibs >= 2.23
+aaa_glibc-solibs >= 2.33
 eudev >= 3.2.11
-fuse >= 2.9.9
+fuse3 >= 3.10.5
 gcc >= 11.2.0
 gcc-g++ >= 11.2.0
 glib2 >= 2.70.3
