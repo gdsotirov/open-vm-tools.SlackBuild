@@ -23,8 +23,8 @@
 . ../../slack-package.conf
 
 NAME=open-vm-tools
-VERSION=12.0.0
-VER_BLD=19345655
+VERSION=12.0.5
+VER_BLD=19716617
 ARCH=${ARCH:-i586}
 BUILD=${BUILD:-1}
 
